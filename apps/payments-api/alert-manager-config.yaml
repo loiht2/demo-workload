@@ -19,5 +19,5 @@ spec:
   receivers:
     - name: 'grafana-webhook-receiver'
       webhookConfigs:
-        - url: 'http://opsgentic.opsgentic.svc.cluster.local:8080/webhook/grafana'
+        - url: 'http://opsgentic.opsgentic.svc:80/webhook/grafana'
           sendResolved: true
