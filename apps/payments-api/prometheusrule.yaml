@@ -30,8 +30,8 @@ spec:
           for: 2m
           labels:
             severity: critical
-            gitops_repo: lehuannhatrang/demo-workload
-            gitops_path: apps/payments-api/deployment.yaml
+            # gitops_repo: lehuannhatrang/demo-workload
+            # gitops_path: apps/payments-api/deployment.yaml
           annotations:
             summary: "Pod {{ $labels.pod }} memory above 75% of limit"
             description: "{{ $labels.namespace }}/{{ $labels.pod }} memory working set is above 75% of its limit for 2m."
