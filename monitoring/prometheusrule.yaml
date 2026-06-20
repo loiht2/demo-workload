@@ -1,0 +1,37 @@
+# Optional: requires the Prometheus Operator (kube-prometheus-stack) with
+# kube-state-metrics + cAdvisor metrics. Adjust the `release` label to match your
+# Prometheus instance's ruleSelector, or remove it if your selector is open.
+#
+# The alert carries gitops_repo / gitops_path labels so that, when routed to
+# opsgentic via the Alertmanager/Grafana webhook, the remediation PR targets the
+# right file in this repo.
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: payments-api-rules
+  namespace: payments
+  labels:
+    release: kube-prometheus-stack
+spec:
+  groups:
+    - name: payments-api.rules
+      rules:
+        - alert: HighPodMemory
+          expr: |
+            (
+              sum by (namespace, pod) (
+                container_memory_working_set_bytes{namespace="payments", container!="", container!="POD"}
+              )
+              /
+              sum by (namespace, pod) (
+                kube_pod_container_resource_limits{namespace="payments", resource="memory"}
+              )
+            ) > 0.75
+          for: 2m
+          labels:
+            severity: critical
+            gitops_repo: lehuannhatrang/demo-workload
+            gitops_path: apps/payments-api/deployment.yaml
+          annotations:
+            summary: "Pod {{ $labels.pod }} memory above 75% of limit"
+            description: "{{ $labels.namespace }}/{{ $labels.pod }} memory working set is above 75% of its limit for 2m."

@@ -1,0 +1,16 @@
+# Placeholder Service (the demo container does not serve traffic). Present so the
+# manifest set resembles a real application and is a richer GitOps target.
+apiVersion: v1
+kind: Service
+metadata:
+  name: payments-api
+  namespace: payments
+  labels:
+    app: payments-api
+spec:
+  selector:
+    app: payments-api
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
