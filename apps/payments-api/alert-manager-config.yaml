@@ -1,0 +1,23 @@
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: payments-webhook-route
+  namespace: payments
+  labels:
+    release: kube-prometheus-stack
+spec:
+  route:
+    groupBy: ['alertname', 'pod']
+    groupWait: 30s
+    groupInterval: 5m
+    repeatInterval: 12h
+    receiver: 'grafana-webhook-receiver'
+    matchers:
+      - name: alertname
+        value: HighPodMemory
+        matchType: =
+  receivers:
+    - name: 'grafana-webhook-receiver'
+      webhookConfigs:
+        - url: 'http://192.168.40.246:8080/webhook/grafana'
+          sendResolved: true

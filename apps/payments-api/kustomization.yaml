@@ -6,3 +6,4 @@ resources:
   - deployment.yaml
   - service.yaml
   - prometheusrule.yaml
+  - alert-manager-config.yaml
