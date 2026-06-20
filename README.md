@@ -10,8 +10,7 @@ apps/payments-api/      # the demo app (HighPodMemory remediation target)
   deployment.yaml       # tight memory limit (64Mi) -> fires HighPodMemory
   service.yaml          # placeholder Service
   kustomization.yaml
-monitoring/
-  prometheusrule.yaml   # optional HighPodMemory alert (Prometheus Operator)
+  prometheusrule.yaml   # HighPodMemory alert (Prometheus Operator)
 ```
 
 The `payments-api` pod allocates ~50Mi against a 64Mi limit (~80%), so it sits above the alert threshold without being OOM-killed. The intended remediation is to raise `resources.limits.memory`.
@@ -20,8 +19,6 @@ The `payments-api` pod allocates ~50Mi against a 64Mi limit (~80%), so it sits a
 
 ```bash
 kubectl apply -k apps/payments-api/
-# optional, requires kube-prometheus-stack:
-kubectl apply -f monitoring/prometheusrule.yaml
 ```
 
 Check it is running near its limit:
