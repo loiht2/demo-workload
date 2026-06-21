@@ -1,0 +1,15 @@
+# Placeholder Service (the demo container does not serve traffic).
+apiVersion: v1
+kind: Service
+metadata:
+  name: orders-api
+  namespace: orders
+  labels:
+    app: orders-api
+spec:
+  selector:
+    app: orders-api
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080

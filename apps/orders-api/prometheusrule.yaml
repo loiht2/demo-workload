@@ -1,0 +1,27 @@
+# PodCrashLooping: the pod restarts repeatedly (liveness kills it during startup). Carries
+# namespace/pod so opsgentic resolves the workload (orders-api). Remediation: relax the
+# liveness probe (raise initialDelaySeconds / failureThreshold) or add a startupProbe.
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: orders-api-rules
+  namespace: orders
+  labels:
+    release: kube-prometheus-stack
+spec:
+  groups:
+    - name: orders-api.rules
+      rules:
+        - alert: PodCrashLooping
+          expr: |
+            max by (namespace, pod) (
+              increase(kube_pod_container_status_restarts_total{namespace="orders"}[10m])
+            ) > 3
+          for: 2m
+          labels:
+            severity: critical
+            # gitops_repo: lehuannhatrang/demo-workload
+            # gitops_path: apps/orders-api/deployment.yaml
+          annotations:
+            summary: "Pod {{ $labels.pod }} is crash-looping"
+            description: "{{ $labels.namespace }}/{{ $labels.pod }} restarted more than 3 times in 10m."

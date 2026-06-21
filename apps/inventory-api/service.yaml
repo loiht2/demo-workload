@@ -1,0 +1,15 @@
+# Placeholder Service (the demo container does not serve traffic).
+apiVersion: v1
+kind: Service
+metadata:
+  name: inventory-api
+  namespace: inventory
+  labels:
+    app: inventory-api
+spec:
+  selector:
+    app: inventory-api
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080

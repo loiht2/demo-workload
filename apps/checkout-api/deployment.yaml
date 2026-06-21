@@ -1,0 +1,31 @@
+# checkout-api: CPU-bound demo. stress pins 2 CPUs while the container is limited to 200m,
+# so it runs hot against its CPU limit -> HighPodCPU. Remediation: raise resources.limits.cpu.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: checkout-api
+  namespace: checkout
+  labels:
+    app: checkout-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: checkout-api
+  template:
+    metadata:
+      labels:
+        app: checkout-api
+    spec:
+      containers:
+        - name: checkout-api
+          image: polinux/stress:latest
+          command: ["stress"]
+          args: ["--cpu", "2"]
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "32Mi"
+            limits:
+              cpu: "200m"
+              memory: "64Mi"

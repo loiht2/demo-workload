@@ -1,0 +1,23 @@
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: checkout-webhook-route
+  namespace: checkout
+  labels:
+    release: kube-prometheus-stack
+spec:
+  route:
+    groupBy: ['alertname', 'pod']
+    groupWait: 30s
+    groupInterval: 5m
+    repeatInterval: 12h
+    receiver: 'opsgentic-webhook'
+    matchers:
+      - name: alertname
+        value: HighPodCPU
+        matchType: =
+  receivers:
+    - name: 'opsgentic-webhook'
+      webhookConfigs:
+        - url: 'http://opsgentic.opsgentic.svc:80/webhook/grafana'
+          sendResolved: false

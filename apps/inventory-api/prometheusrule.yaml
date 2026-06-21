@@ -1,0 +1,26 @@
+# PodOOMKilled: the container's last termination reason is OOMKilled. Carries namespace/pod so
+# opsgentic resolves the workload (inventory-api). Remediation: raise resources.limits.memory.
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: inventory-api-rules
+  namespace: inventory
+  labels:
+    release: kube-prometheus-stack
+spec:
+  groups:
+    - name: inventory-api.rules
+      rules:
+        - alert: PodOOMKilled
+          expr: |
+            max by (namespace, pod) (
+              kube_pod_container_status_last_terminated_reason{namespace="inventory", reason="OOMKilled"}
+            ) > 0
+          for: 1m
+          labels:
+            severity: critical
+            # gitops_repo: lehuannhatrang/demo-workload
+            # gitops_path: apps/inventory-api/deployment.yaml
+          annotations:
+            summary: "Pod {{ $labels.pod }} was OOMKilled"
+            description: "{{ $labels.namespace }}/{{ $labels.pod }} was killed for exceeding its memory limit."

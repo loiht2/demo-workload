@@ -1,0 +1,33 @@
+# HighPodCPU: container CPU usage sits above 90% of its CPU limit. Carries namespace/pod so
+# opsgentic resolves the workload (checkout-api) and the GitOps repo. Remediation: raise the
+# CPU limit. Uncomment gitops_* to override repo discovery.
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: checkout-api-rules
+  namespace: checkout
+  labels:
+    release: kube-prometheus-stack
+spec:
+  groups:
+    - name: checkout-api.rules
+      rules:
+        - alert: HighPodCPU
+          expr: |
+            (
+              sum by (namespace, pod) (
+                rate(container_cpu_usage_seconds_total{namespace="checkout", container!="", container!="POD"}[5m])
+              )
+              /
+              sum by (namespace, pod) (
+                kube_pod_container_resource_limits{namespace="checkout", resource="cpu"}
+              )
+            ) > 0.9
+          for: 2m
+          labels:
+            severity: warning
+            # gitops_repo: lehuannhatrang/demo-workload
+            # gitops_path: apps/checkout-api/deployment.yaml
+          annotations:
+            summary: "Pod {{ $labels.pod }} CPU above 90% of limit"
+            description: "{{ $labels.namespace }}/{{ $labels.pod }} CPU usage is above 90% of its limit for 2m."

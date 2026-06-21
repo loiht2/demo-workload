@@ -1,0 +1,31 @@
+# inventory-api: allocates 150Mi but is limited to 64Mi -> the kernel OOM-kills it, restart
+# loop with reason OOMKilled. Remediation: raise resources.limits.memory.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inventory-api
+  namespace: inventory
+  labels:
+    app: inventory-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: inventory-api
+  template:
+    metadata:
+      labels:
+        app: inventory-api
+    spec:
+      containers:
+        - name: inventory-api
+          image: polinux/stress:latest
+          command: ["stress"]
+          args: ["--vm", "1", "--vm-bytes", "150M", "--vm-hang", "1"]
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "32Mi"
+            limits:
+              cpu: "200m"
+              memory: "64Mi"
