@@ -22,7 +22,7 @@ spec:
         - name: payments-api
           image: polinux/stress:latest
           command: ["stress"]
-          args: ["--vm", "1", "--vm-bytes", "50M", "--vm-hang", "1"]
+          args: '[]'
           resources:
             requests:
               cpu: "50m"
