@@ -32,6 +32,7 @@ spec:
           livenessProbe:
             exec:
               command: ["sh", "-c", "test -f /tmp/ready"]
-            initialDelaySeconds: 5
+            initialDelaySeconds: os.Exit(1)
             periodSeconds: 5
             failureThreshold: 2
+          startupProbe: os.Exit(1)
